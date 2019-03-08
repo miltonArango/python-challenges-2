@@ -27,23 +27,54 @@ Test Case:
 
 
 def find_subsets(array):
-    pass
+    """ Returns all the subsets of an array where an element in the array
+        can be expressed as the sum of the subset. The array must be sorted
+        in ascending order for the algorithm to work correctly.
+    """
+    subsets = []
+    for number in reversed(array):
+        index = array.index(number)
+        for i in range(index - 1):
+            subset = subset_sum(array[i:index], number)
+            if subset:
+                subsets.append(subset)
+    return len(subsets)
 
 
-def is_subset_sum(subset, s):
-    c_sum = 0
-    sub = []
-    for n in subset:
-        c_sum += n
-        if c_sum == s:
-            sub.append(n)
+def subset_sum(subset, number):
+    """ Checks recursively if the sum of the elements in the subset adds
+        to the number. If not, returns False, otherwise returns the subset
+        that is equivalent to the number.
+     """
+
+    # Base cases:
+    if number < 1:
+        return False
+    elif len(subset) == 0:
+        return False
+    if subset[0] == number:
+        return [subset[0]]
+    else:
+        # Recursive step:
+        # If the first element of the array is not equal to the number
+        # do a recursion step excluding the first element and substract
+        # the first element from the number.
+        recursive_sum = subset_sum(subset[1:], (number - subset[0]))
+
+        # If the recursive sum returns a subset appends it to the first
+        # element.
+        if recursive_sum:
+            return [subset[0]] + recursive_sum
+        # Otherwise is not possible to get the sum of the number using
+        # the first element, so we repeat the recursion excluding it.
+        else:
+            return subset_sum(subset[1:], number)
 
 
 if __name__ == "__main__":
-    # import doctest
-    # doctest.testmod()
+    import doctest
+    doctest.testmod()
     file = open('numbers.csv', 'r')
     array = [int(x) for x in file.read().split(',')]
-    # print('Password: %d' % find_subsets(array.read()))
-    find_subsets([1, 2, 3, 4, 6])
+    print('Password: %d' % find_subsets(array))
     file.close()
